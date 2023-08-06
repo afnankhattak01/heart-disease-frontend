@@ -2,12 +2,9 @@ import { Fragment, useState, useEffect } from "react";
 import { useUserContext } from "../../context/userContext";
 import Loader from "../../common/loader";
 import axios from "axios";
-import { Worker, Viewer } from "@react-pdf-viewer/core";
-import { zoomPlugin } from "@react-pdf-viewer/zoom";
 import { message } from "antd";
 import jsPDF from "jspdf";
 import "@react-pdf-viewer/core/lib/styles/index.css";
-
 
 const TimiColumns = [
   {
@@ -148,7 +145,6 @@ const DownloadPrev = () => {
 
   return (
     <Fragment>
-      
       {state.isLoading ? (
         <Loader />
       ) : (
