@@ -6,6 +6,7 @@ import axios from "axios";
 import { Image } from "antd";
 import "antd/dist/antd.css";
 import { useNavigate } from "react-router-dom";
+import axiosPublic from "../../helpers/axiosPublic";
 const schema = yup.object().shape({
   username: yup.string().required("Please Provide a User Name."),
   emailaddress: yup.string().email().required("Please Provide a Valid Email."),
@@ -20,7 +21,6 @@ const schema = yup.object().shape({
   confirmpassword: yup
     .string()
     .oneOf([yup.ref("password"), null], "Passwords must match."),
- 
 });
 
 const SignupForm = () => {
@@ -37,7 +37,6 @@ const SignupForm = () => {
   });
   const navigate = useNavigate();
   const onSubmit = async (data) => {
-    
     const formData = new FormData();
     formData.append("username", data.username);
     formData.append("emailaddress", data.emailaddress);
@@ -45,11 +44,15 @@ const SignupForm = () => {
     formData.append("password", data.password);
 
     try {
-      const { data } = await axios.post("/api/loginpage/logindata", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const { data } = await axiosPublic.post(
+        "/api/loginpage/logindata",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (data.success) {
         reset();

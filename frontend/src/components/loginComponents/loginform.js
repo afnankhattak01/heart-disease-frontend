@@ -2,9 +2,10 @@ import { Fragment, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import axios from "axios";
-import "antd/dist/antd.css";
 import { useNavigate, Link } from "react-router-dom";
+import "antd/dist/antd.css";
+import axiosPublic from "../../helpers/axiosPublic";
+
 const schema = yup.object().shape({
   emailaddress: yup.string().email().required("Please Provide a Valid Email."),
   password: yup.string().required("Please Provide a Password."),
@@ -24,7 +25,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const onSubmit = async (userLoginData) => {
     try {
-      const { data } = await axios.post(
+      const { data } = await axiosPublic.post(
         "/api/loginpage/verifyloginpage",
         userLoginData,
         {
