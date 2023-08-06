@@ -7,7 +7,7 @@ import { zoomPlugin } from "@react-pdf-viewer/zoom";
 import { message } from "antd";
 import "@react-pdf-viewer/zoom/lib/styles/index.css";
 
-import autoTable from "jspdf-autotable";
+import autoTable from " -autotable";
 
 import jsPDF from "jspdf";
 import "@react-pdf-viewer/core/lib/styles/index.css";
