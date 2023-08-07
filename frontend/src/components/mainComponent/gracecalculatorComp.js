@@ -7,6 +7,7 @@ import axios from "axios";
 import { CalcualteGraceRiskFunc } from "../../helpers/calculategracerisk";
 import { useUserContext } from "../../context/userContext";
 import Loader from "../../common/loader";
+import axiosPublic from "../../helpers/axiosPublic";
 
 const addUserSchema = yup.object().shape({
   patientAge: yup
@@ -76,7 +77,7 @@ const GraceCalculatorComp = () => {
 
     data = { ...data, user: state.user, graceScore: grScore };
     try {
-      const resp = await axios.post("/api/riskcalculation/gracerisk", data);
+      const resp = await axiosPublic.post("/api/riskcalculation/gracerisk", data);
       reset();
     } catch (error) {
       console.log("err", error.message);

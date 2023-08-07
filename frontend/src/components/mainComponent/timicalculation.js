@@ -6,6 +6,7 @@ import * as yup from "yup";
 import axios from "axios";
 import { useUserContext } from "../../context/userContext";
 import Loader from "../../common/loader";
+import axiosPublic from "../../helpers/axiosPublic";
 
 const addUserSchema = yup.object().shape({
   patientAge: yup
@@ -218,7 +219,7 @@ const TimiScoreCalc = () => {
       riskPPercentage
     };
     try {
-      const resp = await axios.post("/api/timi/timirisk", data);
+      const resp = await axiosPublic.post("/api/timi/timirisk", data);
       reset();
     } catch (error) {
       console.log("err", error.message);

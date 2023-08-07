@@ -13,9 +13,9 @@ const SideBar = () => {
           <ul className="nav-for-sidebar">
             <li>
               {" "}
-              <Link to={"/"} className="li-101">
+              {/* <Link to={"/"} className="li-101">
                 Check Heart Disases
-              </Link>
+              </Link> */}
             </li>
             <li>
               {" "}

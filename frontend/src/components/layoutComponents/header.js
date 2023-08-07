@@ -1,6 +1,9 @@
 import { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { Avatar, Dropdown, Menu, Space } from "antd";
+import { AntDesignOutlined, DownOutlined } from "@ant-design/icons";
+
 const MainHeader = () => {
   const navigate = useNavigate();
 
@@ -9,7 +12,24 @@ const MainHeader = () => {
 
     navigate("/");
   };
-
+  const items = [
+    {
+      label: <Link to={"/profile"}>Profile</Link>,
+      key: "0",
+    },
+    {
+      label: (
+        <span
+          onClick={() => {
+            handleLogout();
+          }}
+        >
+          Logout
+        </span>
+      ),
+      key: "1",
+    },
+  ];
   return (
     <Fragment>
       <nav className="mainNavProtected shadow-lg bg-light">
@@ -17,19 +37,26 @@ const MainHeader = () => {
           <div className="d-flex">
             <h2 className="main-heading">Heart Disease Prediction</h2>
           </div>
-
-          <ul className="nav-ul">
-            <li>
-              <Link to={"/home"}>Home</Link>
-            </li>
-            <li
-              onClick={() => {
-                handleLogout();
-              }}
-            >
-              <Link to={"/home"}>Logout</Link>
-            </li>
-          </ul>
+          <Dropdown
+            menu={{
+              items,
+            }}
+            trigger={["click"]}
+          >
+            <Space>
+              <Avatar
+                style={{
+                  width: 60,
+                  height: 60,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "10px 0 10px 0",
+                }}
+                icon={<AntDesignOutlined className="fs-3" />}
+              />
+            </Space>
+          </Dropdown>
         </div>
       </nav>
     </Fragment>

@@ -4,7 +4,9 @@ import Loader from "../../common/loader";
 import axios from "axios";
 import { message } from "antd";
 import jsPDF from "jspdf";
+import "jspdf-autotable";
 import "@react-pdf-viewer/core/lib/styles/index.css";
+import axiosPublic from "../../helpers/axiosPublic";
 
 const TimiColumns = [
   {
@@ -86,7 +88,7 @@ const DownloadPrev = () => {
   const handleFetchingPrevRecord = async (type) => {
     const { emailaddress } = state.user;
     try {
-      const resp = await axios.get(`/api/fetchRecord/fetch`, {
+      const resp = await axiosPublic.get(`/api/fetchRecord/fetch`, {
         params: {
           email: emailaddress,
           type,
@@ -131,7 +133,7 @@ const DownloadPrev = () => {
     };
 
     try {
-      const resp = await axios.post(
+      const resp = await axiosPublic.post(
         "/api/delete/deleteRecord",
         deleteCredentials
       );

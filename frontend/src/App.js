@@ -13,6 +13,7 @@ import DownloadRecord from "./pages/protectedPages/downloadrecord";
 import ForgetPassword from "./pages/forgetpassword";
 import PasswordReset from "./pages/passwordreset";
 import NotFound from "./pages/notfound";
+import Profile from "./pages/profile";
 
 function App() {
   return (
@@ -69,6 +70,8 @@ function App() {
           />
 
           <Route path="/forgetPassword" element={<ForgetPassword />} />
+
+          <Route path="/profile" element={<Profile />} />
 
           <Route
             path="/resetpassword/:resettoken"

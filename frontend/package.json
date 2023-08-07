@@ -4,6 +4,7 @@
   "private": true,
   "proxy": "http://localhost:5000",
   "dependencies": {
+    "@ant-design/icons": "^5.2.5",
     "@hookform/resolvers": "^2.8.8",
     "@react-pdf-viewer/core": "^3.5.0",
     "@react-pdf-viewer/zoom": "^3.5.0",

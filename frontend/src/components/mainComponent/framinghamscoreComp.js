@@ -7,6 +7,7 @@ import { CalculateFirminghamScore } from "../../helpers/calculateFirghamScore";
 import { useUserContext } from "../../context/userContext";
 import Loader from "../../common/loader";
 import axios from "axios";
+import axiosPublic from "../../helpers/axiosPublic";
 
 const addUserSchema = yup.object().shape({
   patientAge: yup
@@ -82,7 +83,7 @@ const FraminghamScoreCalc = () => {
       deathProbability: results.deathProbability,
     };
     try {
-      const resp = await axios.post("/api/firmingham/firminghamRisk", data);
+      const resp = await axiosPublic.post("/api/firmingham/firminghamRisk", data);
       reset();
     } catch (error) {
       console.log("err", error.message);
