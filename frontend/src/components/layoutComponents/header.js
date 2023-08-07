@@ -13,10 +13,7 @@ const MainHeader = () => {
     navigate("/");
   };
   const items = [
-    {
-      label: <Link to={"/profile"}>Profile</Link>,
-      key: "0",
-    },
+   
     {
       label: (
         <span
