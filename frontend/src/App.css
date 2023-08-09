@@ -99,8 +99,8 @@ label {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover;
-  border-top-right-radius: 16px;
-  border-bottom-right-radius: 16px;
+  /* border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px; */
 }
 
 .pic {
@@ -129,16 +129,7 @@ label {
 /* media queries ! */
 
 @media screen and (max-width: 768px) {
-  .pic {
-    display: none;
-  }
-  .form {
-    max-width: 65%;
-  }
-  .formDiv {
-    grid-column-start: 1;
-    grid-column-end: 4;
-  }
+  
   .primary-x {
     width: 60%;
     color: #fff;
@@ -158,10 +149,7 @@ label {
     color: #fff;
   }
 
-  .form-login-class {
-    /* margin-top: 50px !important; */
-    align-items: flex-start;
-  }
+  
 }
 
 .hover {

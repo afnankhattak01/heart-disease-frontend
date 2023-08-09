@@ -1,12 +1,10 @@
-import { Fragment, useState, useEffect } from "react";
-import { useUserContext } from "../../context/userContext";
-import Loader from "../../common/loader";
-import axios from "axios";
+import { Fragment, useState } from "react";
 import { message } from "antd";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "@react-pdf-viewer/core/lib/styles/index.css";
-import axiosPublic from "../../helpers/axiosPublic";
+import axiosPrivate from "../../helpers/axiosprivate";
+import UserHook from "../../hooks/userhook";
 
 const TimiColumns = [
   {
@@ -74,23 +72,19 @@ const graceRiskColumns = [
 ];
 
 const DownloadPrev = () => {
-  const { state, Logout, fetchInitialData } = useUserContext();
+  const data = UserHook();
+
   const [isDownloable, setDownloable] = useState(false);
 
   const [downloadData, setDownloadData] = useState([]);
 
   const [type, setType] = useState("");
 
-  useEffect(() => {
-    fetchInitialData();
-  }, []);
-
   const handleFetchingPrevRecord = async (type) => {
-    const { emailaddress } = state.user;
     try {
-      const resp = await axiosPublic.get(`/api/fetchRecord/fetch`, {
+      const resp = await axiosPrivate.get(`/api/fetchRecord/fetch`, {
         params: {
-          email: emailaddress,
+          email: data?.email ? data?.email : "",
           type,
         },
       });
@@ -133,7 +127,7 @@ const DownloadPrev = () => {
     };
 
     try {
-      const resp = await axiosPublic.post(
+      const resp = await axiosPrivate.post(
         "/api/delete/deleteRecord",
         deleteCredentials
       );
@@ -147,66 +141,62 @@ const DownloadPrev = () => {
 
   return (
     <Fragment>
-      {state.isLoading ? (
-        <Loader />
-      ) : (
-        <section className="gracecalculatorpage mt-3">
-          <div className="container">
-            <div className="card">
-              <div className="card-header">
-                <strong>Download Previous Record</strong>
-              </div>
+      <section className="gracecalculatorpage mt-3">
+        <div className="container">
+          <div className="card">
+            <div className="card-header">
+              <strong>Download Previous Record</strong>
+            </div>
 
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-md-6 col-12">
-                    <select
-                      className="form-select"
-                      onChange={(e) => {
-                        e.target.value === "GR"
-                          ? setType("Grace Risk")
-                          : e.target.value === "FM"
-                          ? setType("Firmingham Risk")
-                          : setType("Timi Risk");
-                        handleFetchingPrevRecord(e.target.value);
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-6 col-12">
+                  <select
+                    className="form-select"
+                    onChange={(e) => {
+                      e.target.value === "GR"
+                        ? setType("Grace Risk")
+                        : e.target.value === "FM"
+                        ? setType("Firmingham Risk")
+                        : setType("Timi Risk");
+                      handleFetchingPrevRecord(e.target.value);
+                    }}
+                  >
+                    <option value={""}>Choose an option</option>
+                    <option value={"GR"}>Grace Risk Record</option>
+                    <option value={"FM"}>Framingham Risk Record</option>
+                    <option value={"TI"}>Timi Risk Record</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            {isDownloable && (
+              <div className="row">
+                <div className="col-12">
+                  <div className=" m-3 d-flex gap-2 justify-content-end">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => {
+                        handleDownloaddable();
                       }}
                     >
-                      <option value={""}>Choose an option</option>
-                      <option value={"GR"}>Grace Risk Record</option>
-                      <option value={"FM"}>Framingham Risk Record</option>
-                      <option value={"TI"}>Timi Risk Record</option>
-                    </select>
+                      Download Record
+                    </button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => {
+                        handleDelete();
+                      }}
+                    >
+                      Delete Record
+                    </button>
                   </div>
                 </div>
               </div>
-              {isDownloable && (
-                <div className="row">
-                  <div className="col-12">
-                    <div className=" m-3 d-flex gap-2 justify-content-end">
-                      <button
-                        className="btn btn-primary"
-                        onClick={() => {
-                          handleDownloaddable();
-                        }}
-                      >
-                        Download Record
-                      </button>
-                      <button
-                        className="btn btn-danger"
-                        onClick={() => {
-                          handleDelete();
-                        }}
-                      >
-                        Delete Record
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            )}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
     </Fragment>
   );
 };

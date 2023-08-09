@@ -1,10 +1,9 @@
 import "./App.css";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import { RouteGurad } from "./helpers/routeGuard";
-import { UserContextProvider } from "./context/userContext";
 import HomePage from "./pages/protectedPages/homepage";
 import GraceCalculator from "./pages/protectedPages/gracecalculator";
 import FraminghamScore from "./pages/protectedPages/framinghamcalculator";
@@ -14,21 +13,30 @@ import ForgetPassword from "./pages/forgetpassword";
 import PasswordReset from "./pages/passwordreset";
 import NotFound from "./pages/notfound";
 import Profile from "./pages/profile";
+import { Loginhook } from "./hooks/loginhook";
+import UserHook from "./hooks/userhook";
 
 function App() {
+  const data = UserHook();
+
   return (
-    <UserContextProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route
+            path="/"
+            element={data?.user ? <Navigate to="/home" /> : <Login />}
+          />
 
-          <Route path="/user/createaccount/new/signup" element={<Signup />} />
+          <Route
+            path="/user/createaccount/new/signup"
+            element={data?.user ? <Navigate to="/home" /> : <Signup />}
+          />
 
           <Route
             path="/home"
             element={
               <RouteGurad>
-                <HomePage />{" "}
+                <HomePage />
               </RouteGurad>
             }
           />
@@ -81,7 +89,6 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
-    </UserContextProvider>
   );
 }
 

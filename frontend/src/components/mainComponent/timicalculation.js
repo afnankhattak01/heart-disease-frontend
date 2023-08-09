@@ -3,10 +3,8 @@ import { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import axios from "axios";
-import { useUserContext } from "../../context/userContext";
-import Loader from "../../common/loader";
-import axiosPublic from "../../helpers/axiosPublic";
+import axiosPrivate from "../../helpers/axiosprivate";
+import UserHook from "../../hooks/userhook";
 
 const addUserSchema = yup.object().shape({
   patientAge: yup
@@ -59,6 +57,8 @@ const addUserSchema = yup.object().shape({
 });
 
 const TimiScoreCalc = () => {
+  const contextData = UserHook();
+
   const [isReuslt, setResultState] = useState(false);
 
   const [timiScore, setTimiScore] = useState(0);
@@ -67,12 +67,6 @@ const TimiScoreCalc = () => {
   const [result, setResult] = useState(
     "% risk of all-cause mortality at 30 days."
   );
-
-  const { state, Logout, fetchInitialData } = useUserContext();
-
-  useEffect(() => {
-    fetchInitialData();
-  }, []);
 
   const {
     register,
@@ -214,12 +208,14 @@ const TimiScoreCalc = () => {
 
     data = {
       ...data,
-      user: state.user,
+      user: {
+        emailaddress: contextData?.email ? contextData?.email : "",
+      },
       timiScore: TimiScore,
-      riskPPercentage
+      riskPPercentage,
     };
     try {
-      const resp = await axiosPublic.post("/api/timi/timirisk", data);
+      const resp = await axiosPrivate.post("/api/timi/timirisk", data);
       reset();
     } catch (error) {
       console.log("err", error.message);
@@ -229,211 +225,205 @@ const TimiScoreCalc = () => {
 
   return (
     <Fragment>
-      {state.isLoading ? (
-        <Loader />
-      ) : (
-        <section className="gracecalculatorpage mt-3">
-          <div className="container">
-            <div className="card">
-              <div className="card-header">
-                <strong>Timi Risk Calculator</strong>
-              </div>
+      <section className="gracecalculatorpage mt-3">
+        <div className="container">
+          <div className="card">
+            <div className="card-header">
+              <strong>Timi Risk Calculator</strong>
+            </div>
 
-              <div className="card-body">
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="row">
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">Patient Age</label>
-                      <input
-                        placeholder="Age"
-                        className="form-control"
-                        {...register("patientAge")}
-                        name="patientAge"
-                      />
+            <div className="card-body">
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="row">
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">Patient Age</label>
+                    <input
+                      placeholder="Age"
+                      className="form-control"
+                      {...register("patientAge")}
+                      name="patientAge"
+                    />
 
-                      <p className="text-danger">
-                        {errors.patientAge?.message}
-                      </p>
-                    </div>
-
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">
-                        Systolic Blood Pressure (SBP)
-                      </label>
-                      <input
-                        placeholder="Systolic Blood Pressure"
-                        className="form-control"
-                        {...register("systolicBloodPressure")}
-                        name="systolicBloodPressure"
-                      />
-                      <p className="text-danger">
-                        {errors.systolicBloodPressure?.message}
-                      </p>
-                    </div>
-
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">Heart Rate </label>
-                      <input
-                        placeholder="Systolic Blood Pressure"
-                        className="form-control"
-                        {...register("heartRate")}
-                        name="heartRate"
-                      />
-                      <p className="text-danger">{errors.heartRate?.message}</p>
-                    </div>
-
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">Killip Class II-IV</label>
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("killip")}
-                          name="killip"
-                          id="flexRadioDefault2"
-                          value={true}
-                        />
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          Yes
-                        </label>
-                      </div>
-
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("killip")}
-                          name="killip"
-                          id="flexRadioDefault2"
-                          value={false}
-                        />
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          No
-                        </label>
-                      </div>
-                      <p className="text-danger">{errors.killip?.message}</p>
-                    </div>
-
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">weight</label>
-                      <input
-                        placeholder="weight"
-                        className="form-control"
-                        {...register("weight")}
-                        name="weight"
-                      />
-
-                      <p className="text-danger">{errors.weight?.message}</p>
-                    </div>
-
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">
-                        Anterior ST Elevation or LBBB
-                      </label>
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("LBBB")}
-                          name="LBBB"
-                          id="flexRadioDefault2"
-                          value={true}
-                        />
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          Yes
-                        </label>
-                      </div>
-
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("LBBB")}
-                          name="LBBB"
-                          id="flexRadioDefault2"
-                          value={false}
-                        />
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          No
-                        </label>
-                      </div>
-                      <p className="text-danger">{errors.LBBB?.message}</p>
-                    </div>
-
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">
-                        Diabetes, Hypertension or Angina
-                      </label>
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("angina")}
-                          name="angina"
-                          id="flexRadioDefault2"
-                          value={true}
-                        />
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          Yes
-                        </label>
-                      </div>
-
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("angina")}
-                          name="angina"
-                          id="flexRadioDefault2"
-                          value={false}
-                        />
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          No
-                        </label>
-                      </div>
-                      <p className="text-danger">{errors.angina?.message}</p>
-                    </div>
-
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">Time To Treatment</label>
-                      <input
-                        placeholder="Time to Treatment"
-                        className="form-control"
-                        {...register("timetoTreatment")}
-                        name="timetoTreatment"
-                      />
-
-                      <p className="text-danger">
-                        {errors.timetoTreatment?.message}
-                      </p>
-                    </div>
-
-                    <div className="text-end">
-                      <button className="btn btn-primary" type="submit">
-                        Submit
-                      </button>
-                    </div>
-
-                    <div className="col">
-                      {isReuslt ? (
-                        <Fragment>
-                          <h4> Your Timi Score :</h4>
-                          <p className="text-danger fw-bold">
-                            {riskPPercentage}
-                            {result}
-                          </p>
-                        </Fragment>
-                      ) : (
-                        ""
-                      )}
-                    </div>
+                    <p className="text-danger">{errors.patientAge?.message}</p>
                   </div>
-                </form>
-              </div>
+
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">
+                      Systolic Blood Pressure (SBP)
+                    </label>
+                    <input
+                      placeholder="Systolic Blood Pressure"
+                      className="form-control"
+                      {...register("systolicBloodPressure")}
+                      name="systolicBloodPressure"
+                    />
+                    <p className="text-danger">
+                      {errors.systolicBloodPressure?.message}
+                    </p>
+                  </div>
+
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">Heart Rate </label>
+                    <input
+                      placeholder="Systolic Blood Pressure"
+                      className="form-control"
+                      {...register("heartRate")}
+                      name="heartRate"
+                    />
+                    <p className="text-danger">{errors.heartRate?.message}</p>
+                  </div>
+
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">Killip Class II-IV</label>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        {...register("killip")}
+                        name="killip"
+                        id="flexRadioDefault2"
+                        value={true}
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        Yes
+                      </label>
+                    </div>
+
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        {...register("killip")}
+                        name="killip"
+                        id="flexRadioDefault2"
+                        value={false}
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        No
+                      </label>
+                    </div>
+                    <p className="text-danger">{errors.killip?.message}</p>
+                  </div>
+
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">weight</label>
+                    <input
+                      placeholder="weight"
+                      className="form-control"
+                      {...register("weight")}
+                      name="weight"
+                    />
+
+                    <p className="text-danger">{errors.weight?.message}</p>
+                  </div>
+
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">
+                      Anterior ST Elevation or LBBB
+                    </label>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        {...register("LBBB")}
+                        name="LBBB"
+                        id="flexRadioDefault2"
+                        value={true}
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        Yes
+                      </label>
+                    </div>
+
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        {...register("LBBB")}
+                        name="LBBB"
+                        id="flexRadioDefault2"
+                        value={false}
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        No
+                      </label>
+                    </div>
+                    <p className="text-danger">{errors.LBBB?.message}</p>
+                  </div>
+
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">
+                      Diabetes, Hypertension or Angina
+                    </label>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        {...register("angina")}
+                        name="angina"
+                        id="flexRadioDefault2"
+                        value={true}
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        Yes
+                      </label>
+                    </div>
+
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        {...register("angina")}
+                        name="angina"
+                        id="flexRadioDefault2"
+                        value={false}
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        No
+                      </label>
+                    </div>
+                    <p className="text-danger">{errors.angina?.message}</p>
+                  </div>
+
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">Time To Treatment</label>
+                    <input
+                      placeholder="Time to Treatment"
+                      className="form-control"
+                      {...register("timetoTreatment")}
+                      name="timetoTreatment"
+                    />
+
+                    <p className="text-danger">
+                      {errors.timetoTreatment?.message}
+                    </p>
+                  </div>
+
+                  <div className="text-end">
+                    <button className="btn btn-primary" type="submit">
+                      Submit
+                    </button>
+                  </div>
+
+                  <div className="col">
+                    {isReuslt ? (
+                      <Fragment>
+                        <h4> Your Timi Score :</h4>
+                        <p className="text-danger fw-bold">
+                          {riskPPercentage}
+                          {result}
+                        </p>
+                      </Fragment>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
     </Fragment>
   );
 };

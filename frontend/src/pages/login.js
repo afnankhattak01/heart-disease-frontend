@@ -11,24 +11,19 @@ const Login = () => {
         </div>
       </header>
 
-    
-        <section className="form-login-class ">
-          <div className="container-x2 container-common  shadow-lg x-men">
-            <div className="formDiv ">
-              <LoginForm />
-            </div>
+      <div className="row  ">
+        <div className="col-md-4  d-flex  align-items-center">
+          <LoginForm />
+        </div>
 
-            <div className="pic">
-              <img
-                src="/images/heart-2.jpg"
-                alt="img of road"
-                className="responsive"
-
-              />
-            </div>
-          </div>
-        </section>
-    
+        <div className="col-md-8 h-100">
+          <img
+            src="/images/heart-2.jpg"
+            alt="img of road"
+            className="responsive"
+          />
+        </div>
+      </div>
     </Fragment>
   );
 };

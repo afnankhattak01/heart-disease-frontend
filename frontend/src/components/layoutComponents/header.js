@@ -3,17 +3,22 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Avatar, Dropdown, Menu, Space } from "antd";
 import { AntDesignOutlined, DownOutlined } from "@ant-design/icons";
+import UserHook from "../../hooks/userhook";
 
 const MainHeader = () => {
   const navigate = useNavigate();
+  const { dispatch } = UserHook();
 
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem("user");
+
+    dispatch({
+      type: "LOGOUT",
+    });
 
     navigate("/");
   };
   const items = [
-   
     {
       label: (
         <span

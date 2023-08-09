@@ -1,9 +1,9 @@
 import { Navigate } from "react-router-dom";
-const RouteGurad = ({ children, redirectPath = "/" }) => {
-  const isTokenAvailable = localStorage.getItem("token");
-
-  if (!isTokenAvailable) {
-    return <Navigate to={redirectPath} replace />;
+import UserHook from "../hooks/userhook";
+const RouteGurad = ({ children }) => {
+  const data = UserHook();
+  if (!data?.user) {
+    return <Navigate to="/" replace={true} />;
   }
   return children;
 };

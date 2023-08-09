@@ -1,12 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
-import App from './App';
+import App from "./App";
+import { AuthContextComp } from "./context/authContext";
 
 ReactDOM.render(
-  <React.Fragment>
+  <AuthContextComp>
     <App />
-  </React.Fragment>,
-  document.getElementById('root')
-);
+  </AuthContextComp>,
 
+  document.getElementById("root")
+);

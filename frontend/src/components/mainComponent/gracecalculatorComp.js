@@ -3,11 +3,9 @@ import { Fragment, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import axios from "axios";
 import { CalcualteGraceRiskFunc } from "../../helpers/calculategracerisk";
-import { useUserContext } from "../../context/userContext";
-import Loader from "../../common/loader";
-import axiosPublic from "../../helpers/axiosPublic";
+import axiosPrivate from "../../helpers/axiosprivate";
+import UserHook from "../../hooks/userhook";
 
 const addUserSchema = yup.object().shape({
   patientAge: yup
@@ -56,12 +54,7 @@ const addUserSchema = yup.object().shape({
 });
 
 const GraceCalculatorComp = () => {
-  const { state, Logout, fetchInitialData } = useUserContext();
-
-  useEffect(() => {
-    fetchInitialData();
-  }, []);
-
+  const contextData = UserHook();
 
   const {
     register,
@@ -75,9 +68,18 @@ const GraceCalculatorComp = () => {
   const onSubmit = async (data) => {
     let grScore = CalcualteGraceRiskFunc(data);
 
-    data = { ...data, user: state.user, graceScore: grScore };
+    data = {
+      ...data,
+      user: {
+        emailaddress: contextData?.email ? contextData?.email : "",
+      },
+      graceScore: grScore,
+    };
     try {
-      const resp = await axiosPublic.post("/api/riskcalculation/gracerisk", data);
+      const resp = await axiosPrivate.post(
+        "/api/riskcalculation/gracerisk",
+        data
+      );
       reset();
     } catch (error) {
       console.log("err", error.message);
@@ -87,244 +89,234 @@ const GraceCalculatorComp = () => {
 
   return (
     <Fragment>
-      {state.isLoading ? (
-        <Loader />
-      ) : (
-        <section className="gracecalculatorpage mt-3">
-          <div className="container">
-            <div className="card">
-              <div className="card-header">
-                <strong>Grace Risk Calculator</strong>
-              </div>
+      <section className="gracecalculatorpage mt-3">
+        <div className="container">
+          <div className="card">
+            <div className="card-header">
+              <strong>Grace Risk Calculator</strong>
+            </div>
 
-              <div className="card-body">
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="row">
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">Patient Age</label>
-                      <input
-                        placeholder="Age"
-                        className="form-control"
-                        {...register("patientAge")}
-                        name="patientAge"
-                      />
+            <div className="card-body">
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="row">
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">Patient Age</label>
+                    <input
+                      placeholder="Age"
+                      className="form-control"
+                      {...register("patientAge")}
+                      name="patientAge"
+                    />
 
-                      <p className="text-danger">
-                        {errors.patientAge?.message}
-                      </p>
-                    </div>
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">Heart Rate (HR)</label>
+                    <p className="text-danger">{errors.patientAge?.message}</p>
+                  </div>
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">Heart Rate (HR)</label>
+                    <input
+                      placeholder="Heart Rate"
+                      className="form-control"
+                      {...register("heartRate")}
+                      name="heartRate"
+                    />
+                    <p className="text-danger">{errors.heartRate?.message}</p>
+                  </div>
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">
+                      Systolic Blood Pressure (SBP)
+                    </label>
+                    <input
+                      placeholder="Systolic Blood Pressure"
+                      className="form-control"
+                      {...register("systolicBloodPressure")}
+                      name="systolicBloodPressure"
+                    />
+                    <p className="text-danger">
+                      {errors.systolicBloodPressure?.message}
+                    </p>
+                  </div>
+
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">Creatinine</label>
+
+                    <input
+                      placeholder="Creatinine"
+                      className="form-control"
+                      {...register("Creatinine")}
+                      name="Creatinine"
+                    />
+                    <p className="text-danger">{errors.Creatinine?.message}</p>
+                  </div>
+
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">Killip Class</label>
+                    <div class="form-check">
                       <input
-                        placeholder="Heart Rate"
-                        className="form-control"
-                        {...register("heartRate")}
-                        name="heartRate"
+                        class="form-check-input"
+                        type="radio"
+                        id="fist"
+                        value={"Cardiogenic shock"}
+                        {...register("Killip")}
+                        name="Killip"
                       />
-                      <p className="text-danger">{errors.heartRate?.message}</p>
-                    </div>
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">
-                        Systolic Blood Pressure (SBP)
+                      <label class="form-check-label" for="flexRadioDefault1">
+                        Cardiogenic shock
                       </label>
+                    </div>
+                    <div class="form-check">
                       <input
-                        placeholder="Systolic Blood Pressure"
-                        className="form-control"
-                        {...register("systolicBloodPressure")}
-                        name="systolicBloodPressure"
+                        class="form-check-input"
+                        type="radio"
+                        id="second"
+                        value={"Pulmonary edema"}
+                        {...register("Killip")}
+                        name="Killip"
                       />
-                      <p className="text-danger">
-                        {errors.systolicBloodPressure?.message}
-                      </p>
+                      <label class="form-check-label" for="second">
+                        Pulmonary edema
+                      </label>
                     </div>
 
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">Creatinine</label>
-
+                    <div class="form-check">
                       <input
-                        placeholder="Creatinine"
-                        className="form-control"
-                        {...register("Creatinine")}
-                        name="Creatinine"
+                        class="form-check-input"
+                        type="radio"
+                        {...register("Killip")}
+                        name="Killip"
+                        id="third"
+                        value={"Rales"}
                       />
-                      <p className="text-danger">
-                        {errors.Creatinine?.message}
-                      </p>
-                    </div>
-
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">Killip Class</label>
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          id="fist"
-                          value={"Cardiogenic shock"}
-                          {...register("Killip")}
-                          name="Killip"
-                        />
-                        <label class="form-check-label" for="flexRadioDefault1">
-                          Cardiogenic shock
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          id="second"
-                          value={"Pulmonary edema"}
-                          {...register("Killip")}
-                          name="Killip"
-                        />
-                        <label class="form-check-label" for="second">
-                          Pulmonary edema
-                        </label>
-                      </div>
-
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("Killip")}
-                          name="Killip"
-                          id="third"
-                          value={"Rales"}
-                        />
-                        <label class="form-check-label" for="third">
-                          Rales and/or JVD
-                        </label>
-                      </div>
-
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("Killip")}
-                          name="Killip"
-                          id="fourth"
-                          value={"No CHF"}
-                        />
-                        <label class="form-check-label" for="fourth">
-                          No CHF
-                        </label>
-                      </div>
-                      <p className="text-danger">{errors.Killip?.message}</p>
-                    </div>
-
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">
-                        Cardiac arrest at admission
+                      <label class="form-check-label" for="third">
+                        Rales and/or JVD
                       </label>
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("cardiacArrest")}
-                          id="flexRadioDefault2"
-                          name="cardiacArrest"
-                          value={true}
-                        />
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          Yes
-                        </label>
-                      </div>
-
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("cardiacArrest")}
-                          name="cardiacArrest"
-                          id="flexRadioDefault2"
-                          value={false}
-                        />
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          No
-                        </label>
-                        <p className="text-danger">
-                          {errors.cardiacArrest?.message}
-                        </p>
-                      </div>
                     </div>
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3">
-                        {" "}
-                        Deviations of the ST segment
+
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        {...register("Killip")}
+                        name="Killip"
+                        id="fourth"
+                        value={"No CHF"}
+                      />
+                      <label class="form-check-label" for="fourth">
+                        No CHF
                       </label>
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          name="stSegment"
-                          id="flexRadioDefault2"
-                          value={true}
-                          {...register("stSegment")}
-                        />
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          yes
-                        </label>
-                      </div>
-
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("stSegment")}
-                          name="stSegment"
-                          id="flexRadioDefault2"
-                          value={false}
-                        />
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          No
-                        </label>
-                      </div>
-                      <p className="text-danger">{errors.stSegment?.message}</p>
                     </div>
-                    <div className="col-md-4 col-12">
-                      <label className="mb-3"> Abnormal cardiac enzymes</label>
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("abnormalCardiac")}
-                          name="abnormalCardiac"
-                          id="flexRadioDefault2"
-                          value={true}
-                        />
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          Yes
-                        </label>
-                      </div>
+                    <p className="text-danger">{errors.Killip?.message}</p>
+                  </div>
 
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="radio"
-                          {...register("abnormalCardiac")}
-                          name="abnormalCardiac"
-                          id="flexRadioDefault2"
-                          value={false}
-                        />
-                        <label class="form-check-label" for="flexRadioDefault2">
-                          No
-                        </label>
-                      </div>
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">Cardiac arrest at admission</label>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        {...register("cardiacArrest")}
+                        id="flexRadioDefault2"
+                        name="cardiacArrest"
+                        value={true}
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        Yes
+                      </label>
+                    </div>
+
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        {...register("cardiacArrest")}
+                        name="cardiacArrest"
+                        id="flexRadioDefault2"
+                        value={false}
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        No
+                      </label>
                       <p className="text-danger">
-                        {errors.abnormalCardiac?.message}
+                        {errors.cardiacArrest?.message}
                       </p>
-                    </div>
-                    <div className="text-end">
-                      <button className="btn btn-primary" type="submit">
-                        Submit
-                      </button>
                     </div>
                   </div>
-                </form>
-              </div>
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3">
+                      {" "}
+                      Deviations of the ST segment
+                    </label>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        name="stSegment"
+                        id="flexRadioDefault2"
+                        value={true}
+                        {...register("stSegment")}
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        yes
+                      </label>
+                    </div>
+
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        {...register("stSegment")}
+                        name="stSegment"
+                        id="flexRadioDefault2"
+                        value={false}
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        No
+                      </label>
+                    </div>
+                    <p className="text-danger">{errors.stSegment?.message}</p>
+                  </div>
+                  <div className="col-md-4 col-12">
+                    <label className="mb-3"> Abnormal cardiac enzymes</label>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        {...register("abnormalCardiac")}
+                        name="abnormalCardiac"
+                        id="flexRadioDefault2"
+                        value={true}
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        Yes
+                      </label>
+                    </div>
+
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        {...register("abnormalCardiac")}
+                        name="abnormalCardiac"
+                        id="flexRadioDefault2"
+                        value={false}
+                      />
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        No
+                      </label>
+                    </div>
+                    <p className="text-danger">
+                      {errors.abnormalCardiac?.message}
+                    </p>
+                  </div>
+                  <div className="text-end">
+                    <button className="btn btn-primary" type="submit">
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
     </Fragment>
   );
 };
