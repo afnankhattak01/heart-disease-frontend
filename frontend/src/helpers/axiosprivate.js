@@ -12,4 +12,5 @@ axiosPrivate.interceptors.request.use(function (config) {
   }
   return config;
 });
+
 export default axiosPrivate;

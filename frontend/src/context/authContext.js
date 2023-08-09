@@ -1,8 +1,14 @@
 import { createContext, useEffect } from "react";
 import { useReducer } from "react";
 export const LoginContext = createContext(null);
+let loggedUser = null;
+let userData = localStorage.getItem("user");
+
+if (userData) {
+  loggedUser = JSON.parse(userData);
+}
 const initialState = {
-  user: null,
+  user: loggedUser?loggedUser:null,
   isLoading: false,
   error: "",
 };
@@ -27,23 +33,7 @@ const loginReducer = (state, action) => {
 };
 export const AuthContextComp = ({ children }) => {
   const [state, dispatch] = useReducer(loginReducer, initialState);
-  useEffect(() => {
-    let stringifiedUser = localStorage.getItem("user");
-    let parsedData = null;
-    if (stringifiedUser) {
-      parsedData = JSON.parse(stringifiedUser);
-    }
-
-    if (parsedData) {
-      dispatch({
-        type: "LOGIN",
-        user: parsedData,
-        isLoading: false,
-        error: "",
-      });
-    }
-  }, []);
-
+ 
   return (
     <LoginContext.Provider value={{ ...state, dispatch }}>
       {children}
